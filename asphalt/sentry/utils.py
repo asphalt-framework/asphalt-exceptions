@@ -2,7 +2,7 @@ import inspect
 import logging
 import sys
 from contextlib import suppress
-from typing import Union
+from typing import Union, Dict, Any  # noqa: F401
 
 from asphalt.core import Context, qualified_name, PluginContainer
 from raven import Client
@@ -41,18 +41,8 @@ def report_exception(message: str = None, exception: BaseException = None, *, ct
         else:
             raise Exception('missing "ctx" or "client" parameter')
 
-    if message:
-        if logger is None:
-            # Try to get the caller's module name
-            module = inspect.getmodule(inspect.currentframe().f_back)
-            logger = getattr(module, '__name__', None)
-        if isinstance(logger, str):
-            logger = logging.getLogger(logger)
-        if logger is None:
-            raise Exception('missing "logger" parameter')
-
     # If there is a contextual information provider plugin for this context class, run it
-    extra = {}
+    extra = {}  # type: Dict[str, Any]
     if ctx:
         with suppress(LookupError):
             provider = metadata_providers.resolve(qualified_name(ctx))
@@ -64,6 +54,15 @@ def report_exception(message: str = None, exception: BaseException = None, *, ct
 
     # First log the error (if a log message was given)
     if message:
+        if logger is None:
+            # Try to get the caller's module name
+            module = inspect.getmodule(inspect.currentframe().f_back)
+            logger = getattr(module, '__name__', None)
+        if isinstance(logger, str):
+            logger = logging.getLogger(logger)
+        if logger is None:
+            raise Exception('missing "logger" parameter')
+
         logger.error(message, exc_info=exc_info)
 
     # Then report it to Sentry
