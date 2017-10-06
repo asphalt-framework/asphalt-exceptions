@@ -35,11 +35,9 @@ def report_exception(message: str = None, exception: BaseException = None, *, ct
             raise Exception(
                 'missing "exception" parameter and no current exception context available')
 
-    if not client:
-        if ctx:
-            client = client or ctx.require_resource(Client)
-        else:
-            raise Exception('missing "ctx" or "client" parameter')
+    # If no Client was supplied but a Context was, try to get the Client resource from it
+    if not client and ctx:
+        client = client or ctx.get_resource(Client)
 
     # If there is a contextual information provider plugin for this context class, run it
     extra = {}  # type: Dict[str, Any]
@@ -47,10 +45,6 @@ def report_exception(message: str = None, exception: BaseException = None, *, ct
         with suppress(LookupError):
             provider = metadata_providers.resolve(qualified_name(ctx))
             extra = provider(ctx)
-
-    # Skip this exception if Sentry has already seen it
-    if client.skip_error_for_logging(exc_info):
-        return
 
     # First log the error (if a log message was given)
     if message:
@@ -65,5 +59,6 @@ def report_exception(message: str = None, exception: BaseException = None, *, ct
 
         logger.error(message, exc_info=exc_info)
 
-    # Then report it to Sentry
-    client.captureException(exc_info, message=message, extra=extra)
+    # Then report it to Sentry (if a client could be obtained)
+    if client:
+        client.captureException(exc_info, message=message, extra=extra)
