@@ -1,5 +1,4 @@
 import gc
-import logging
 from asyncio import sleep
 from collections import OrderedDict
 
