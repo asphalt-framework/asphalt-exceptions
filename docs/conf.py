@@ -13,7 +13,7 @@ extensions = [
 templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'asphalt-sentry'
+project = 'asphalt-exceptions'
 author = 'Alex Grönholm'
 copyright = '2017, ' + author
 

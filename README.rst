@@ -1,22 +1,29 @@
-.. image:: https://travis-ci.org/asphalt-framework/asphalt-sentry.svg?branch=master
-  :target: https://travis-ci.org/asphalt-framework/asphalt-sentry
+.. image:: https://travis-ci.org/asphalt-framework/asphalt-exceptions.svg?branch=master
+  :target: https://travis-ci.org/asphalt-framework/asphalt-exceptions
   :alt: Build Status
-.. image:: https://coveralls.io/repos/github/asphalt-framework/asphalt-sentry/badge.svg?branch=master
-  :target: https://coveralls.io/github/asphalt-framework/asphalt-sentry?branch=master
+.. image:: https://coveralls.io/repos/github/asphalt-framework/asphalt-exceptions/badge.svg?branch=master
+  :target: https://coveralls.io/github/asphalt-framework/asphalt-exceptions?branch=master
   :alt: Code Coverage
 
-This Asphalt framework component provides integration with the commercial Sentry_ service.
+This Asphalt framework component provides a pluggable means to send exception reports to external
+services. Optionally, it can also install itself as the default handler for exceptions occurring in
+the event loop.
 
-It provides a facility for applications to report exceptions to Sentry_ and a plugin system
-that allows additional metadata from a particular context class to be added to the report.
-Additionally, it will set itself as the default asyncio exception handler.
+The following backends are provided out of the box:
+
+* Sentry_
+* Raygun_
+* Standard library logging
+
+Plugins can also be written to provide context specific custom data for each backend.
 
 .. _Sentry: http://sentry.io/
+.. _Raygun: https://raygun.com/
 
 Project links
 -------------
 
-* `Documentation <http://asphalt-sentry.readthedocs.org/en/latest/>`_
+* `Documentation <http://asphalt-exceptions.readthedocs.org/en/latest/>`_
 * `Help and support <https://github.com/asphalt-framework/asphalt/wiki/Help-and-support>`_
-* `Source code <https://github.com/asphalt-framework/asphalt-sentry>`_
-* `Issue tracker <https://github.com/asphalt-framework/asphalt-sentry/issues>`_
+* `Source code <https://github.com/asphalt-framework/asphalt-exceptions>`_
+* `Issue tracker <https://github.com/asphalt-framework/asphalt-exceptions/issues>`_

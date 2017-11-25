@@ -1,5 +1,5 @@
-:mod:`asphalt.sentry.component`
-===============================
+:mod:`asphalt.exceptions.component`
+===================================
 
-.. automodule:: asphalt.sentry.component
+.. automodule:: asphalt.exceptions.component
     :members:

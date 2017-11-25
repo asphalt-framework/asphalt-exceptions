@@ -1,49 +1,48 @@
 language: python
 sudo: false
 
+stages:
+  - name: test
+  - name: deploy to pypi
+    if: type = push AND tag =~ ^\d+\.\d+\.\d+
+
 jobs:
+  fast_finish: true
   include:
+    - env: TOXENV=flake8
+
+    - env: TOXENV=mypy
+
+    - env: TOXENV=pypy3
+      cache: pip
+      python: pypy3
+
     - env: TOXENV=py35
-      python: "3.5"
+      after_success: &after_success
+        - pip install coveralls
+        - coveralls
 
     - env: TOXENV=py36
       python: "3.6"
+      after_success: *after_success
 
-    - env: TOXENV=pypy3
-      python: pypy3
-      after_success: skip
-
-    - env: TOXENV=flake8
-      python: "3.5"
-      after_success: skip
-
-    - env: TOXENV=mypy
-      python: "3.5"
-      after_success: skip
-
-    - stage: deploy to PyPI
-      install: pip install -U setuptools
+    - stage: deploy to pypi
+      install: pip install "setuptools >= 36.2.7"
       script: skip
-      after_success: true
       deploy:
         provider: pypi
         user: agronholm
         password:
           secure: VdlUihT9Jtv6TDmKfpA4ISeJ5p+ca8yroaAyDzHv6162/+OBpx4dJ/QP8sHm38iNZlmoX418rRQi8l7DywR04I1UhQtywb3oCZVeX3OfYHZT5mB6zfcosUo/48LLnhUd2sWx9f3YDRswJfy+8WZ0JQnBoo18CEMF3FHZJXkkB8zv0Jmnz/Gp+l1fIOoCSgzJXaTWd00pd8Bd6uXnZS1OA36dvgI9VfYixKxyZ4/+4kebpW+QmikgGqyOQWVO0sdxRjul/VfWOpPEVe9xNuQ89Q5WJ60vpeLVSX9e4TeW9lF4FoJB45Iu85sQgWQxvBkRkuyCHcuh1+isEW6khgwbCDkuJWkXMESgLt2nwsZGjUPR0ZGYDkok7/y0AgnR3PPYjhUCobNGLGr+3Nt935fKhXjPCct3+lfAyU4Zq8UsZBc/dONF3VfonvMqWu2tGKV+f9J92jjiw+dmcAW5dnn/clmf5FGl5u6uTloSe+kb5rURl+t+DgYiBw5Ze1UaLTFhBSACI7pdzj2ek+B7ofH+glcJtA35Z7eDV6/n7vAP77/UNWdPTbv6RRkeu3BxN4Z6vAmwxrP+Rm6JKa55X7jcVHEHniYjXlAcpF0BrLzcApCFNot+oH4ep6gPZ87n2hCz40v736UP6pvWFBpkLUPLAUgSyTLW8+A/hSEjSvowewI=
         distributions: sdist bdist_wheel
-        on:
-          tags: true
-          repo: asphalt-framework/asphalt-sentry
+
+python: "3.5"
 
 install:
-  - pip install -U setuptools
+  - pip install "setuptools >= 36.2.7"
   - pip install tox
 
 script: tox
-
-after_success:
-  - pip install coveralls
-  - coveralls
 
 notifications:
   webhooks:

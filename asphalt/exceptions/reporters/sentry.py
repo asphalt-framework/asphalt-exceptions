@@ -1,21 +1,20 @@
 import logging
-from asyncio import AbstractEventLoop
 from typing import Dict, Any
 
-from asphalt.core import Component, Context, context_teardown
-from async_generator import yield_
+from asphalt.core import Context
 from raven import Client
 from raven_aiohttp import AioHttpTransport
 
-from asphalt.sentry.utils import report_exception
+from asphalt.exceptions.api import ExceptionReporter
 
 logger = logging.getLogger(__name__)
 
 
-class SentryComponent(Component):
+class SentryExceptionReporter(ExceptionReporter):
     """
-    Creates a :class:`raven.Client` and installs an asyncio default exception handler which
-    catches all exceptions that were never retrieved from Futures or Tasks.
+    Reports exceptions using the Sentry_ service.
+
+    To use this backend, install asphalt-exceptions with the ``sentry`` extra.
 
     All keyword arguments are directly passed to :class:`raven.Client`.
     The following defaults are set for the client arguments:
@@ -25,8 +24,12 @@ class SentryComponent(Component):
     * enable_breadcrumbs: ``False``
     * install_logging_hook: ``False``
 
+    The extras passed to this backend must be a dictionary that is passed to
+    :meth:`raven.Client.captureException` as keyword arguments.
+
     For more information, see the `Raven client documentation`_.
 
+    .. _Sentry: https://sentry.io/
     .. _Raven client documentation: https://docs.sentry.io/clients/python/#configuring-the-client
     """
 
@@ -35,20 +38,9 @@ class SentryComponent(Component):
         client_args.setdefault('transport', AioHttpTransport)
         client_args.setdefault('enable_breadcrumbs', False)
         client_args.setdefault('install_logging_hook', False)
-        self.client_args = client_args
         self.client = Client(**client_args)
 
-    @context_teardown
-    async def start(self, ctx: Context) -> None:
-        ctx.add_resource(self.client)
-        ctx.loop.set_exception_handler(self.exception_handler)
-        logger.info('Started Sentry integration')
-
-        await yield_()
-
-        ctx.loop.set_exception_handler(None)
-        logger.info('Stopped Sentry integration')
-
-    def exception_handler(self, loop: AbstractEventLoop, context: Dict[str, Any]) -> None:
-        loop.default_exception_handler(context)
-        report_exception(None, context['exception'], client=self.client)
+    def report_exception(self, ctx: Context, exception: BaseException, message: str,
+                         extra: Dict[str, Any] = None) -> None:
+        exc_info = type(exception), exception, exception.__traceback__
+        self.client.captureException(exc_info, message=message, **(extra or {}))

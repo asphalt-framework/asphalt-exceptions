@@ -10,6 +10,7 @@ Table of contents
 
    configuration
    usage
+   extending
    versionhistory
 
 * :ref:`API reference <modindex>`
