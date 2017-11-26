@@ -9,8 +9,8 @@ from asphalt.exceptions.api import ExceptionReporter
 
 
 @pytest.mark.parametrize('logger', [
-    None, 'asphalt.exceptions', logging.getLogger('asphalt.exceptions')
-], ids=['autologger', 'strlogger', 'loggerinstance'])
+    True, False, 'asphalt.exceptions', logging.getLogger('asphalt.exceptions')
+], ids=['autologger', 'nologger', 'strlogger', 'loggerinstance'])
 @pytest.mark.parametrize('faulty_extras_provider', [False, True], ids=['goodextras', 'badextras'])
 @pytest.mark.parametrize('faulty_reporter', [False, True], ids=['goodreporter', 'badreporter'])
 @pytest.mark.asyncio
@@ -47,7 +47,7 @@ async def test_report_exception(logger, faulty_extras_provider, faulty_reporter,
                 assert reported_exception is e
                 assert reported_message == 'Got a boo-boo'
 
-    if faulty_reporter:
+    if faulty_reporter and logger:
         messages = [record.message for record in caplog.records
                     if record.name == 'asphalt.exceptions']
         assert messages[-1].startswith(

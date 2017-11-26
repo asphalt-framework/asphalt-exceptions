@@ -13,7 +13,7 @@ module_logger = logging.getLogger(__name__)
 
 
 def report_exception(ctx: Context, message: str, exception: BaseException = None, *,
-                     logger: Union[logging.Logger, str] = None) -> None:
+                     logger: Union[logging.Logger, str, bool] = True) -> None:
     """
     Report an exception to all exception reporters in the given context (and optionally log it too)
 
@@ -23,7 +23,7 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
         what was happening when the exception occurred)
     :param exception: the exception to report; retrieved from :func:`sys.exc_info` if omitted
     :param logger: logger instance or logger name to log the exception in, instead of the name of
-        the module where the exception was raised
+        the module where the exception was raised (or ``False`` to skip logging the exception)
 
     """
     from asphalt.exceptions.api import ExceptionReporter
@@ -36,17 +36,21 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
             raise ValueError('missing "exception" parameter and no current exception present in '
                              'sys.exc_info()')
 
-    if logger is None:
-        frame = exception.__traceback__.tb_frame
-        module = inspect.getmodule(frame)
-        if module:
-            logger = logging.getLogger(module.__spec__.name)
-        else:  # pragma: no cover
-            logger = logging.getLogger(frame.f_globals['__name__'])
+    if isinstance(logger, bool):
+        if logger:
+            frame = exception.__traceback__.tb_frame
+            module = inspect.getmodule(frame)
+            if module:
+                logger = logging.getLogger(module.__spec__.name)
+            else:  # pragma: no cover
+                logger = logging.getLogger(frame.f_globals['__name__'])
+        else:
+            logger = None
     elif isinstance(logger, str):
         logger = logging.getLogger(logger)
 
-    logger.error(message, exc_info=exception)
+    if logger:
+        logger.error(message, exc_info=exception)
 
     try:
         extras_provider = extras_providers.resolve(qualified_name(ctx))
