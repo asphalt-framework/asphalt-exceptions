@@ -1,14 +1,15 @@
 import inspect
 import logging
 import sys
-from typing import Union
+from typing import Union, Dict, Any  # noqa: F401
 
-from asphalt.core import Context, qualified_name, PluginContainer, callable_name
+from asphalt.core import Context, qualified_name, merge_config
 from typeguard import check_argument_types
+
+from asphalt.exceptions.api import ExtrasProvider
 
 __all__ = ('report_exception',)
 
-extras_providers = PluginContainer('asphalt.exceptions.extras_providers')
 module_logger = logging.getLogger(__name__)
 
 
@@ -52,18 +53,18 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
     if logger:
         logger.error(message, exc_info=exception)
 
-    try:
-        extras_provider = extras_providers.resolve(qualified_name(ctx))
-    except LookupError:
-        extras_provider = None
-
+    extras_providers = ctx.get_resources(ExtrasProvider)
     for reporter in ctx.get_resources(ExceptionReporter):
-        try:
-            extra = extras_provider(ctx, reporter.__class__) if extras_provider else None
-        except Exception:
-            extra = None
-            module_logger.exception('error retrieving exception extras from %s()',
-                                    callable_name(extras_provider))
+        extra = {}  # type: Dict[str, Any]
+        for provider in extras_providers:
+            try:
+                new_extra = provider.get_extras(ctx, reporter)
+            except Exception:
+                module_logger.exception('error retrieving exception extras for %s from %s',
+                                        qualified_name(reporter), qualified_name(provider))
+            else:
+                if isinstance(new_extra, dict):
+                    extra = merge_config(extra, new_extra)
 
         try:
             reporter.report_exception(ctx, exception, message, extra)

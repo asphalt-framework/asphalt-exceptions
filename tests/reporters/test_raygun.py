@@ -17,7 +17,7 @@ async def test_raygun():
 
     reporter = RaygunExceptionReporter('abvcgrdg234')
     with patch.object(reporter.client, '_post') as post:
-        reporter.report_exception(Context(), exception, 'test exception', None)
+        reporter.report_exception(Context(), exception, 'test exception', {})
 
     await asyncio.sleep(0.1)
     assert post.call_count == 1

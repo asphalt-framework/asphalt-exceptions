@@ -39,33 +39,36 @@ Writing extras providers
 ------------------------
 
 If you want to provide backend specific extra data for exception reporting, you can do so by
-writing an extras provider callback and registering it as an entry point in the
-``asphalt.exceptions.extras_providers`` namespace. Such callbacks always target a specific
-:class:`~asphalt.core.context.Context` subclass. For example, suppose you had a context class named
-``foo.bar.MyContext`` and you had written an extras provider function as follows::
+subclassing :class:`~asphalt.exceptions.api.ExtrasProvider` and adding one or more instances of it
+as resources to the context.
 
+For example, if you wanted to provide extra data for Sentry about your custom context
+(``MyContext``), you could do write a provider like this::
+
+    from asphalt.exceptions.api import ExtrasProvider
     from asphalt.exceptions.reporters.sentry import SentryExceptionReporter
 
 
-    def my_context_extras(context, reporter_class):
-        if issubclass(reporter_class, SentryExceptionReporter):
-            return {}
+    class MyExtrasProvider(ExtrasProvider):
+        def get_extras(ctx, reporter):
+            if isinstance(ctx, MyContext) and isinstance(reporter, SentryExceptionReporter):
+                return {
+                    'time_spent': 1265,
+                    'data': {
+                        'user': {'email': 'foo@example.org'}
+                    },
+                    'tags': {'site': 'example.org'},
+                    'extra': {'foo': 'bar'}
+                }
 
-Then you would add an entry point for it in ``setup.py``::
+And then during the startup of your component::
 
-    setup(
-        # (...other arguments...)
-        entry_points={
-            'asphalt.exceptions.extras_providers': [
-                'foo.bar.MyContext = foo.bar:my_context_extras'
-            ]
-        }
-    )
+    from asphalt.exceptions.api import ExtrasProvider
 
-Or in ``setup.cfg``:
 
-.. code-block:: ini
+    class MyComponent(Component):
+        ...
+        async def start(ctx):
+            ...
+            ctx.add_resource(MyExtrasProvider(), types=[ExtrasProvider])
 
-    [options.entry_points]
-    asphalt.exceptions.extras_providers =
-        foo.bar.MyContext = foo.bar:my_context_extras

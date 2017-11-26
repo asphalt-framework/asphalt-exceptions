@@ -1,10 +1,9 @@
 import logging
-from unittest.mock import patch
 
 import pytest
 from asphalt.core import Context
 
-from asphalt.exceptions import report_exception
+from asphalt.exceptions import report_exception, ExtrasProvider
 from asphalt.exceptions.api import ExceptionReporter
 
 
@@ -17,35 +16,36 @@ from asphalt.exceptions.api import ExceptionReporter
 async def test_report_exception(logger, faulty_extras_provider, faulty_reporter, caplog):
     class DummyReporter(ExceptionReporter):
         def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                             extra=None) -> None:
+                             extra) -> None:
             nonlocal reported_exception, reported_message
-            assert extra == (None if faulty_extras_provider else {'foo': 'bar'})
+            assert extra == ({} if faulty_extras_provider else {'foo': 'bar'})
             reported_exception = exception
             reported_message = message
             if faulty_reporter:
                 raise Exception('bar')
 
-    def fake_provider(context, reporter_class):
-        assert reporter_class is DummyReporter
-        if faulty_extras_provider:
-            raise Exception('foo')
-        else:
-            return {'foo': 'bar'}
+    class DummyProvider(ExtrasProvider):
+        def get_extras(self, ctx: Context, reporter: ExceptionReporter):
+            if faulty_extras_provider:
+                raise Exception('foo')
+            else:
+                return {'foo': 'bar'}
 
-    def fake_resolve(self, obj):
-        assert obj == 'asphalt.core.context.Context'
-        return fake_provider
+    class EmptyProvider(ExtrasProvider):
+        def get_extras(self, ctx: Context, reporter: ExceptionReporter):
+            return None
 
     reported_exception = reported_message = None
-    with patch('asphalt.exceptions.extras_providers.__class__.resolve', fake_resolve):
-        async with Context() as ctx:
-            ctx.add_resource(DummyReporter(), types=[ExceptionReporter])
-            try:
-                1 / 0
-            except ZeroDivisionError as e:
-                report_exception(ctx, 'Got a boo-boo', logger=logger)
-                assert reported_exception is e
-                assert reported_message == 'Got a boo-boo'
+    async with Context() as ctx:
+        ctx.add_resource(DummyReporter(), types=[ExceptionReporter])
+        ctx.add_resource(DummyProvider(), 'dummy', types=[ExtrasProvider])
+        ctx.add_resource(EmptyProvider(), 'empty', types=[ExtrasProvider])
+        try:
+            1 / 0
+        except ZeroDivisionError as e:
+            report_exception(ctx, 'Got a boo-boo', logger=logger)
+            assert reported_exception is e
+            assert reported_message == 'Got a boo-boo'
 
     if faulty_reporter and logger:
         messages = [record.message for record in caplog.records

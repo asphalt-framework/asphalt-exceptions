@@ -25,6 +25,6 @@ class RaygunExceptionReporter(ExceptionReporter):
     def __init__(self, api_key: str, **config) -> None:
         self.client = RaygunSender(api_key, config)
 
-    def report_exception(self, ctx: Context, exception: BaseException,
-                         message: str = None, extra: Dict[str, Any] = None) -> None:
-        self.client.send_exception(exception, **(extra or {}))
+    def report_exception(self, ctx: Context, exception: BaseException, message: str,
+                         extra: Dict[str, Any]) -> None:
+        self.client.send_exception(exception, **extra)

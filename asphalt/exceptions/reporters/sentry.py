@@ -25,7 +25,7 @@ class SentryExceptionReporter(ExceptionReporter):
     * install_logging_hook: ``False``
 
     The extras passed to this backend must be a dictionary that is passed to
-    :meth:`raven.Client.captureException` as keyword arguments.
+    :meth:`raven.Client.capture` as keyword arguments.
 
     For more information, see the `Raven client documentation`_.
 
@@ -41,6 +41,6 @@ class SentryExceptionReporter(ExceptionReporter):
         self.client = Client(**client_args)
 
     def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                         extra: Dict[str, Any] = None) -> None:
+                         extra: Dict[str, Any]) -> None:
         exc_info = type(exception), exception, exception.__traceback__
-        self.client.captureException(exc_info, message=message, **(extra or {}))
+        self.client.captureException(exc_info, message=message, **extra)
