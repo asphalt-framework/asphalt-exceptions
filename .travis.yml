@@ -33,8 +33,10 @@ jobs:
         provider: pypi
         user: agronholm
         password:
-          secure: VdlUihT9Jtv6TDmKfpA4ISeJ5p+ca8yroaAyDzHv6162/+OBpx4dJ/QP8sHm38iNZlmoX418rRQi8l7DywR04I1UhQtywb3oCZVeX3OfYHZT5mB6zfcosUo/48LLnhUd2sWx9f3YDRswJfy+8WZ0JQnBoo18CEMF3FHZJXkkB8zv0Jmnz/Gp+l1fIOoCSgzJXaTWd00pd8Bd6uXnZS1OA36dvgI9VfYixKxyZ4/+4kebpW+QmikgGqyOQWVO0sdxRjul/VfWOpPEVe9xNuQ89Q5WJ60vpeLVSX9e4TeW9lF4FoJB45Iu85sQgWQxvBkRkuyCHcuh1+isEW6khgwbCDkuJWkXMESgLt2nwsZGjUPR0ZGYDkok7/y0AgnR3PPYjhUCobNGLGr+3Nt935fKhXjPCct3+lfAyU4Zq8UsZBc/dONF3VfonvMqWu2tGKV+f9J92jjiw+dmcAW5dnn/clmf5FGl5u6uTloSe+kb5rURl+t+DgYiBw5Ze1UaLTFhBSACI7pdzj2ek+B7ofH+glcJtA35Z7eDV6/n7vAP77/UNWdPTbv6RRkeu3BxN4Z6vAmwxrP+Rm6JKa55X7jcVHEHniYjXlAcpF0BrLzcApCFNot+oH4ep6gPZ87n2hCz40v736UP6pvWFBpkLUPLAUgSyTLW8+A/hSEjSvowewI=
+          secure: ZLHmhZqkgkRbnMRQVILOBsEJi1Gw9TKmIu37T/1tDZIoJceAO1uCPxQcZsFIvfG9IVJYo5GggIaeMxUPp3O8ebwEgxFqwpXyV8zDu8t+pCdn6g8irMgQmv+JPYFRUoFlCsEIBqk3sibSoxO1l60HoXKVBWcTr1TiAcgfCR9H2zfPZDV2EXY3CrlNhpZOqYLtFO+ROYJCzFkkU50TaAZ9sO8NuxOlnV2/e4XLr+ctuIN+ZzVAFuHDCZijA5N3wtYgQQBgyBCIHPShnFdv9uX+T7/N1flXaVj7RjBUNNaK5QckGGTXQQZ6EWyvAdLZZo7XxfeKVAOBvQuFF4wBQEhi3SGMoWTI2Vmcq34ygdMZaVy8evdIFIZ0qPJjqD3i7DKkxINeZ3yyVoeCrkceLtV6DWHlBjUixCP/RRUVopaWsHu6sJ866bQpGzSloNEdopkxlNMGyr07RuNojNmwG2eexfJdrVLCwgQKne17h66u7aDiHLxlalUcvFC2ocspIFMzBAHE0jwjlZHsTdxLl1mRmJ+OI19jct4Lcieo9gkvK1pgv5tqCgDnQNA9l4eGJ1SBKarhaoW1c6OmaCAw38+0w+Ihm/gcJyAM0BESmQCPvXOeApMYOnv58sOS99BooFq9l2M+HiLm4Umk64mM/ZQkQgHfdvUgtunxg0YKb/n+mIc=
         distributions: sdist bdist_wheel
+        on:
+          tags: true
 
 python: "3.5"
 
