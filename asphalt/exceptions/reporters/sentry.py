@@ -24,8 +24,8 @@ class SentryExceptionReporter(ExceptionReporter):
     * enable_breadcrumbs: ``False``
     * install_logging_hook: ``False``
 
-    The extras passed to this backend must be a dictionary that is passed to
-    :meth:`raven.Client.capture` as keyword arguments.
+    The extras passed to this backend are passed to :meth:`raven.Client.capture` as keyword
+    arguments.
 
     For more information, see the `Raven client documentation`_.
 

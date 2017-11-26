@@ -14,7 +14,8 @@ class RaygunExceptionReporter(ExceptionReporter):
 
     All keyword arguments are directly passed to :class:`raygun4py.raygunprovider.RaygunSender`.
 
-    This backend does not support any extras.
+    The extras passed to this backend are passed to
+    :meth:`raygun4py.raygunprovider.RaygunSender.send_exception` as keyword arguments.
 
     .. warning:: The current implementation of this backend sends exceptions synchronously,
         potentially blocking the event loop.
