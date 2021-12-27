@@ -1,10 +1,9 @@
 import logging
 from functools import partial
-from typing import Dict, Optional, Any, List, Tuple  # noqa: F401
+from typing import Any, Dict, List, Optional, Tuple
 
 from asphalt.core import (
-    Component, Context, merge_config, PluginContainer, qualified_name, context_teardown)
-from async_generator import yield_
+    Component, Context, PluginContainer, context_teardown, merge_config, qualified_name)
 from typeguard import check_argument_types
 
 from asphalt.exceptions import report_exception
@@ -56,7 +55,7 @@ class ExceptionReporterComponent(Component):
         if not reporters:
             reporters = {'default': default_args}
 
-        self.reporters = []  # type: List[Tuple]
+        self.reporters: List[Tuple] = []
         for resource_name, config in reporters.items():
             config = merge_config(default_args, config or {})
             type_ = config.pop('backend', resource_name)
@@ -75,6 +74,8 @@ class ExceptionReporterComponent(Component):
             handler = partial(default_exception_handler, ctx=ctx)
             ctx.loop.set_exception_handler(handler)
             logger.info('Installed default event loop exception handler')
-            await yield_()
+
+            yield
+
             ctx.loop.set_exception_handler(None)
             logger.info('Uninstalled default event loop exception handler')
