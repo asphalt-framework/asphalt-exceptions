@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/asphalt-framework/asphalt-exceptions.svg?branch=master
-  :target: https://travis-ci.org/asphalt-framework/asphalt-exceptions
+.. image:: https://github.com/asphalt-framework/asphalt-exceptions/actions/workflows/codeqa-test.yml/badge.svg
+  :target: https://github.com/asphalt-framework/asphalt-exceptions/actions/workflows/codeqa-test.yml
   :alt: Build Status
 .. image:: https://coveralls.io/repos/github/asphalt-framework/asphalt-exceptions/badge.svg?branch=master
   :target: https://coveralls.io/github/asphalt-framework/asphalt-exceptions?branch=master

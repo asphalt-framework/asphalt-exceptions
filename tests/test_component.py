@@ -1,3 +1,5 @@
+import logging
+
 import gc
 from asyncio import sleep
 from collections import OrderedDict
@@ -22,6 +24,7 @@ async def test_start(caplog, install_default_handler):
                              extra=None) -> None:
             pass
 
+    caplog.set_level(logging.INFO)
     reporters = OrderedDict([
         ('dummy1', {'backend': DummyReporter}),
         ('dummy2', {'backend': DummyReporter2})
