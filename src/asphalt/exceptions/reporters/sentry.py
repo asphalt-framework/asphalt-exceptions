@@ -24,6 +24,13 @@ class SentryExceptionReporter(ExceptionReporter):
 
     * environment: "development" or "production", depending on the ``__debug__`` flag
 
+    Integrations can be added via the ``integrations`` option which is a list where each item is
+    either an object that implements the :class:`sentry_sdk.integrations.Integration` interface,
+    or a dictionary where the ``type`` key is a module:varname reference to a class implementing
+    the aforementioned interface. The ``args`` key, when present, should be a sequence that is
+    passed to the integration as positional arguments, while the ``kwargs`` key, when present,
+    should be a mapping of keyword arguments to their values.
+
     The extras passed to this backend are passed to :func:`sentry_sdk.capture_exception` as keyword
     arguments.
 
