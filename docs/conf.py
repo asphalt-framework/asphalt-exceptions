@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from importlib.metadata import get_version
+from importlib.metadata import version
 
 from packaging.version import parse
 
@@ -18,7 +18,7 @@ project = "asphalt-exceptions"
 author = "Alex Grönholm"
 copyright = "2017, " + author
 
-v = parse(get_version(project))
+v = parse(version(project))
 version = v.base_version
 release = v.public
 

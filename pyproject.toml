@@ -103,5 +103,4 @@ extras = doc
     sentry
     raygun
 commands = sphinx-build docs build/sphinx
-usedevelop = true
 """
