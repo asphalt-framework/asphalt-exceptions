@@ -9,13 +9,18 @@ from asphalt.core import Context, merge_config, qualified_name
 
 from asphalt.exceptions.api import ExceptionReporter, ExtrasProvider
 
-__all__ = ('report_exception',)
+__all__ = ("report_exception",)
 
 module_logger = logging.getLogger(__name__)
 
 
-def report_exception(ctx: Context, message: str, exception: BaseException = None, *,
-                     logger: logging.Logger | str | bool = True) -> None:
+def report_exception(
+    ctx: Context,
+    message: str,
+    exception: BaseException = None,
+    *,
+    logger: logging.Logger | str | bool = True,
+) -> None:
     """
     Report an exception to all exception reporters in the given context (and optionally log it too)
 
@@ -31,8 +36,10 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
     if not exception:
         exception = sys.exc_info()[1]
         if not exception:
-            raise ValueError('missing "exception" parameter and no current exception present in '
-                             'sys.exc_info()')
+            raise ValueError(
+                'missing "exception" parameter and no current exception present in '
+                "sys.exc_info()"
+            )
 
     actual_logger: logging.Logger | None
     if isinstance(logger, bool):
@@ -43,7 +50,7 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
             if module and module.__spec__:
                 actual_logger = logging.getLogger(module.__spec__.name)
             else:  # pragma: no cover
-                actual_logger = logging.getLogger(frame.f_globals['__name__'])
+                actual_logger = logging.getLogger(frame.f_globals["__name__"])
         else:
             actual_logger = None
     elif isinstance(logger, str):
@@ -61,8 +68,11 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
             try:
                 new_extra = provider.get_extras(ctx, reporter)
             except Exception:
-                module_logger.exception('error retrieving exception extras for %s from %s',
-                                        qualified_name(reporter), qualified_name(provider))
+                module_logger.exception(
+                    "error retrieving exception extras for %s from %s",
+                    qualified_name(reporter),
+                    qualified_name(provider),
+                )
             else:
                 if isinstance(new_extra, dict):
                     extra = merge_config(extra, new_extra)
@@ -70,5 +80,6 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
         try:
             reporter.report_exception(ctx, exception, message, extra)
         except Exception:
-            module_logger.exception('error calling exception reporter (%s)',
-                                    qualified_name(reporter))
+            module_logger.exception(
+                "error calling exception reporter (%s)", qualified_name(reporter)
+            )

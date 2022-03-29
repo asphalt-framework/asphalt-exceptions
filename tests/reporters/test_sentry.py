@@ -15,9 +15,9 @@ async def test_sentry():
     except ZeroDivisionError as exc:
         exception = exc
 
-    reporter = SentryExceptionReporter(dsn='http://username:password@127.0.0.1/000000')
-    with patch.object(reporter.client, 'send') as send:
-        reporter.report_exception(Context(), exception, 'test exception', {})
+    reporter = SentryExceptionReporter(dsn="http://username:password@127.0.0.1/000000")
+    with patch.object(reporter.client, "send") as send:
+        reporter.report_exception(Context(), exception, "test exception", {})
 
     await asyncio.sleep(0.1)
     assert send.call_count == 1

@@ -36,13 +36,20 @@ class SentryExceptionReporter(ExceptionReporter):
     """
 
     def __init__(self, **client_args) -> None:
-        client_args.setdefault('environment', 'development' if __debug__ else 'production')
-        client_args.setdefault('transport', AioHttpTransport)
-        client_args.setdefault('enable_breadcrumbs', False)
-        client_args.setdefault('install_logging_hook', False)
+        client_args.setdefault(
+            "environment", "development" if __debug__ else "production"
+        )
+        client_args.setdefault("transport", AioHttpTransport)
+        client_args.setdefault("enable_breadcrumbs", False)
+        client_args.setdefault("install_logging_hook", False)
         self.client = Client(**client_args)
 
-    def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                         extra: dict[str, Any]) -> None:
+    def report_exception(
+        self,
+        ctx: Context,
+        exception: BaseException,
+        message: str,
+        extra: dict[str, Any],
+    ) -> None:
         exc_info = type(exception), exception, exception.__traceback__
         self.client.captureException(exc_info, message=message, **extra)

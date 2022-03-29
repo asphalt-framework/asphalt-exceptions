@@ -15,8 +15,13 @@ class ExceptionReporter(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                         extra: dict[str, Any]) -> None:
+    def report_exception(
+        self,
+        ctx: Context,
+        exception: BaseException,
+        message: str,
+        extra: dict[str, Any],
+    ) -> None:
         """
         Report the given exception to an external service.
 
@@ -43,7 +48,9 @@ class ExtrasProvider(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_extras(self, ctx: Context, reporter: ExceptionReporter) -> dict[str, Any] | None:
+    def get_extras(
+        self, ctx: Context, reporter: ExceptionReporter
+    ) -> dict[str, Any] | None:
         """
         Return context specific extras for the given exception reporter backend.
 

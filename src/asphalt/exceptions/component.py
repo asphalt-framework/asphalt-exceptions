@@ -6,19 +6,26 @@ from functools import partial
 from typing import Any, AsyncIterator, Dict, Optional
 
 from asphalt.core import (
-    Component, Context, PluginContainer, context_teardown, merge_config, qualified_name)
+    Component,
+    Context,
+    PluginContainer,
+    context_teardown,
+    merge_config,
+    qualified_name,
+)
 from typeguard import check_argument_types
 
 from asphalt.exceptions import report_exception
 from asphalt.exceptions.api import ExceptionReporter
 
-reporter_backends = PluginContainer('asphalt.exceptions.reporters', ExceptionReporter)
+reporter_backends = PluginContainer("asphalt.exceptions.reporters", ExceptionReporter)
 logger = logging.getLogger(__name__)
 
 
-def default_exception_handler(loop: AbstractEventLoop, context: dict[str, Any], *,
-                              ctx: Context) -> None:
-    report_exception(ctx, context['message'], context['exception'])
+def default_exception_handler(
+    loop: AbstractEventLoop, context: dict[str, Any], *, ctx: Context
+) -> None:
+    report_exception(ctx, context["message"], context["exception"])
 
 
 class ExceptionReporterComponent(Component):
@@ -52,17 +59,21 @@ class ExceptionReporterComponent(Component):
     :param default_args: default values for constructor keyword arguments
     """
 
-    def __init__(self, reporters: Dict[str, Optional[Dict[str, Any]]] = None,
-                 install_default_handler: bool = True, **default_args) -> None:
+    def __init__(
+        self,
+        reporters: Dict[str, Optional[Dict[str, Any]]] = None,
+        install_default_handler: bool = True,
+        **default_args,
+    ) -> None:
         assert check_argument_types()
         self.install_default_handler = install_default_handler
         if not reporters:
-            reporters = {'default': default_args}
+            reporters = {"default": default_args}
 
         self.reporters: list[tuple] = []
         for resource_name, config in reporters.items():
             merged_config = merge_config(default_args, config or {})
-            type_ = merged_config.pop('backend', resource_name)
+            type_ = merged_config.pop("backend", resource_name)
             serializer = reporter_backends.create_object(type_, **merged_config)
             self.reporters.append((resource_name, serializer))
 
@@ -71,15 +82,18 @@ class ExceptionReporterComponent(Component):
         for resource_name, reporter in self.reporters:
             types = [ExceptionReporter, type(reporter)]
             ctx.add_resource(reporter, resource_name, types=types)
-            logger.info('Configured exception reporter (%s; class=%s)', resource_name,
-                        qualified_name(reporter))
+            logger.info(
+                "Configured exception reporter (%s; class=%s)",
+                resource_name,
+                qualified_name(reporter),
+            )
 
         if self.install_default_handler:
             handler = partial(default_exception_handler, ctx=ctx)
             ctx.loop.set_exception_handler(handler)
-            logger.info('Installed default event loop exception handler')
+            logger.info("Installed default event loop exception handler")
 
             yield
 
             ctx.loop.set_exception_handler(None)
-            logger.info('Uninstalled default event loop exception handler')
+            logger.info("Uninstalled default event loop exception handler")
