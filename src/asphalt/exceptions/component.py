@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 def default_exception_handler(
     loop: AbstractEventLoop, context: dict[str, Any], *, ctx: Context
 ) -> None:
-    report_exception(ctx, context["message"], context["exception"])
+    if "exception" in context:
+        report_exception(ctx, context["message"], context["exception"])
 
 
 class ExceptionReporterComponent(Component):

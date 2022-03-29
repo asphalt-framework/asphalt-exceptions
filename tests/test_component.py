@@ -10,6 +10,13 @@ from asphalt.exceptions.api import ExceptionReporter
 from asphalt.exceptions.component import ExceptionReporterComponent
 
 
+class DummyExceptionReporter(ExceptionReporter):
+    def report_exception(
+        self, ctx: Context, exception: BaseException, message: str, extra=None
+    ) -> None:
+        self.reported_exception = exception
+
+
 @pytest.mark.parametrize(
     "install_default_handler", [True, False], ids=["default", "nodefault"]
 )
@@ -69,25 +76,25 @@ async def test_default_exception_handler(event_loop):
     exception handler.
 
     """
-    reported_exception = reported_message = None
 
     async def fail_task():
         return 1 / 0
 
-    class DummyExceptionReporter(ExceptionReporter):
-        def report_exception(
-            self, ctx: Context, exception: BaseException, message: str, extra=None
-        ) -> None:
-            nonlocal reported_exception, reported_message
-            reported_exception = exception
-            reported_message = message
-
     async with Context() as ctx:
         component = ExceptionReporterComponent(backend=DummyExceptionReporter)
         await component.start(ctx)
+        reporter = ctx.get_resource(ExceptionReporter)
         event_loop.create_task(fail_task())
         await sleep(0.1)
         gc.collect()
 
-    assert isinstance(reported_exception, ZeroDivisionError)
-    assert reported_message == "Task exception was never retrieved"
+    assert isinstance(reporter.reported_exception, ZeroDivisionError)
+
+
+@pytest.mark.asyncio
+async def test_default_exception_handler_no_exception(event_loop):
+    async with Context() as ctx:
+        component = ExceptionReporterComponent(backend=DummyExceptionReporter)
+        await component.start(ctx)
+        handler = event_loop.get_exception_handler()
+        handler(event_loop, {"message": "dummy"})
