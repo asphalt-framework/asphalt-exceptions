@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Dict, Sequence, Union
 
-from asphalt.core import Context
-from raven import Client
-from raven_aiohttp import AioHttpTransport
+import sentry_sdk
+from asphalt.core import Context, resolve_reference
+from sentry_sdk.integrations import Integration
+from typeguard import check_argument_types
 
 from asphalt.exceptions.api import ExceptionReporter
 
@@ -18,31 +19,37 @@ class SentryExceptionReporter(ExceptionReporter):
 
     To use this backend, install asphalt-exceptions with the ``sentry`` extra.
 
-    All keyword arguments are directly passed to :class:`raven.Client`.
+    All keyword arguments are directly passed to :func:`sentry_sdk.init`.
     The following defaults are set for the client arguments:
 
     * environment: "development" or "production", depending on the ``__debug__`` flag
-    * transport: :class:`raven_aiohttp.AioHttpTransport`
-    * enable_breadcrumbs: ``False``
-    * install_logging_hook: ``False``
 
-    The extras passed to this backend are passed to :meth:`raven.Client.capture` as keyword
+    The extras passed to this backend are passed to :func:`sentry_sdk.capture_exception` as keyword
     arguments.
 
-    For more information, see the `Raven client documentation`_.
+    For more information, see the `Sentry SDK documentation`_.
 
     .. _Sentry: https://sentry.io/
-    .. _Raven client documentation: https://docs.sentry.io/clients/python/#configuring-the-client
+    .. _Sentry SDK documentation: https://docs.sentry.io/platforms/python/
     """
 
-    def __init__(self, **client_args) -> None:
-        client_args.setdefault(
-            "environment", "development" if __debug__ else "production"
-        )
-        client_args.setdefault("transport", AioHttpTransport)
-        client_args.setdefault("enable_breadcrumbs", False)
-        client_args.setdefault("install_logging_hook", False)
-        self.client = Client(**client_args)
+    def __init__(
+        self, integrations: Sequence[Union[Integration, Dict[str, Any]]] = (), **options
+    ) -> None:
+        check_argument_types()
+        options.setdefault("environment", "development" if __debug__ else "production")
+
+        integrations_: list[Integration] = []
+        for integration in integrations:
+            if isinstance(integration, dict):
+                integration_class = resolve_reference(integration["type"])
+                integration = integration_class(
+                    *integration.get("args", ()), **integration.get("kwargs", {})
+                )
+
+            integrations_.append(integration)
+
+        sentry_sdk.init(integrations=integrations_, **options)
 
     def report_exception(
         self,
@@ -51,5 +58,4 @@ class SentryExceptionReporter(ExceptionReporter):
         message: str,
         extra: dict[str, Any],
     ) -> None:
-        exc_info = type(exception), exception, exception.__traceback__
-        self.client.captureException(exc_info, message=message, **extra)
+        sentry_sdk.capture_exception(exception, **extra)

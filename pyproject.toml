@@ -45,10 +45,7 @@ doc = [
     "sphinx-autodoc-typehints >= 1.2.0",
     "sphinxcontrib-asyncio >= 0.2.0",
 ]
-sentry = [
-    "raven >= 6.1",
-    "raven-aiohttp >= 0.5.0"
-]
+sentry = ["sentry-sdk >= 1.5"]
 raygun = ["raygun4py >= 4.3"]
 
 [project.entry-points."asphalt.components"]
