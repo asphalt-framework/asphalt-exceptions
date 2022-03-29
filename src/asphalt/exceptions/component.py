@@ -65,7 +65,7 @@ class ExceptionReporterComponent(Component):
         install_default_handler: bool = True,
         **default_args,
     ) -> None:
-        assert check_argument_types()
+        check_argument_types()
         self.install_default_handler = install_default_handler
         if not reporters:
             reporters = {"default": default_args}
