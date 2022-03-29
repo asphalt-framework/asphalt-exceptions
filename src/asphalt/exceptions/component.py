@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import logging
+from asyncio import AbstractEventLoop
 from functools import partial
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, Optional
 
 from asphalt.core import (
     Component, Context, PluginContainer, context_teardown, merge_config, qualified_name)
@@ -13,7 +16,8 @@ reporter_backends = PluginContainer('asphalt.exceptions.reporters', ExceptionRep
 logger = logging.getLogger(__name__)
 
 
-def default_exception_handler(loop, context: Dict[str, Any], *, ctx: Context) -> None:
+def default_exception_handler(loop: AbstractEventLoop, context: dict[str, Any], *,
+                              ctx: Context) -> None:
     report_exception(ctx, context['message'], context['exception'])
 
 
@@ -55,15 +59,15 @@ class ExceptionReporterComponent(Component):
         if not reporters:
             reporters = {'default': default_args}
 
-        self.reporters: List[Tuple] = []
+        self.reporters: list[tuple] = []
         for resource_name, config in reporters.items():
-            config = merge_config(default_args, config or {})
-            type_ = config.pop('backend', resource_name)
-            serializer = reporter_backends.create_object(type_, **config)
+            merged_config = merge_config(default_args, config or {})
+            type_ = merged_config.pop('backend', resource_name)
+            serializer = reporter_backends.create_object(type_, **merged_config)
             self.reporters.append((resource_name, serializer))
 
     @context_teardown
-    async def start(self, ctx: Context) -> None:
+    async def start(self, ctx: Context) -> AsyncIterator[None]:
         for resource_name, reporter in self.reporters:
             types = [ExceptionReporter, type(reporter)]
             ctx.add_resource(reporter, resource_name, types=types)

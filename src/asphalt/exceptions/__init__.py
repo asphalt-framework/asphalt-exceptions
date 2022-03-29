@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 import inspect
 import logging
 import sys
-from typing import Union, Dict, Any  # noqa: F401
+from typing import Any
 
-from asphalt.core import Context, qualified_name, merge_config
-from typeguard import check_argument_types
+from asphalt.core import Context, merge_config, qualified_name
 
-from asphalt.exceptions.api import ExtrasProvider
+from asphalt.exceptions.api import ExceptionReporter, ExtrasProvider
 
 __all__ = ('report_exception',)
 
@@ -14,7 +15,7 @@ module_logger = logging.getLogger(__name__)
 
 
 def report_exception(ctx: Context, message: str, exception: BaseException = None, *,
-                     logger: Union[logging.Logger, str, bool] = True) -> None:
+                     logger: logging.Logger | str | bool = True) -> None:
     """
     Report an exception to all exception reporters in the given context (and optionally log it too)
 
@@ -27,35 +28,35 @@ def report_exception(ctx: Context, message: str, exception: BaseException = None
         the module where the exception was raised (or ``False`` to skip logging the exception)
 
     """
-    from asphalt.exceptions.api import ExceptionReporter
-
-    assert check_argument_types()
-
     if not exception:
         exception = sys.exc_info()[1]
         if not exception:
             raise ValueError('missing "exception" parameter and no current exception present in '
                              'sys.exc_info()')
 
+    actual_logger: logging.Logger | None
     if isinstance(logger, bool):
-        if logger:
-            frame = exception.__traceback__.tb_frame
+        tb = exception.__traceback__
+        if logger and tb:
+            frame = tb.tb_frame
             module = inspect.getmodule(frame)
-            if module:
-                logger = logging.getLogger(module.__spec__.name)
+            if module and module.__spec__:
+                actual_logger = logging.getLogger(module.__spec__.name)
             else:  # pragma: no cover
-                logger = logging.getLogger(frame.f_globals['__name__'])
+                actual_logger = logging.getLogger(frame.f_globals['__name__'])
         else:
-            logger = None
+            actual_logger = None
     elif isinstance(logger, str):
-        logger = logging.getLogger(logger)
+        actual_logger = logging.getLogger(logger)
+    else:
+        actual_logger = logger
 
-    if logger:
-        logger.error(message, exc_info=exception)
+    if actual_logger:
+        actual_logger.error(message, exc_info=exception)
 
     extras_providers = ctx.get_resources(ExtrasProvider)
     for reporter in ctx.get_resources(ExceptionReporter):
-        extra = {}  # type: Dict[str, Any]
+        extra: dict[str, Any] = {}
         for provider in extras_providers:
             try:
                 new_extra = provider.get_extras(ctx, reporter)

@@ -71,4 +71,3 @@ And then during the startup of your component::
         async def start(ctx):
             ...
             ctx.add_resource(MyExtrasProvider(), types=[ExtrasProvider])
-

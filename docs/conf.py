@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import pkg_resources
+from importlib.metadata import get_version
 
+from packaging.version import parse
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -17,7 +18,7 @@ project = 'asphalt-exceptions'
 author = 'Alex Grönholm'
 copyright = '2017, ' + author
 
-v = pkg_resources.get_distribution(project).parsed_version
+v = parse(get_version(project))
 version = v.base_version
 release = v.public
 
@@ -33,11 +34,10 @@ html_static_path = ['_static']
 htmlhelp_basename = project.replace('-', '') + 'doc'
 
 extlinks = {
-    'github': ('https://github.com/asphalt-framework/%s/tree/%s/%%s' % (project, version),
-               None)
+    'github': (f'https://github.com/asphalt-framework/{project}/tree/{version}/%s', None)
 }
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
-    'asphalt': ('http://asphalt.readthedocs.io/en/latest/', None)
+    'asphalt': ('https://asphalt.readthedocs.io/en/latest/', None)
 }

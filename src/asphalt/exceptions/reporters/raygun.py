@@ -1,4 +1,6 @@
-from typing import Dict, Any
+from __future__ import annotations
+
+from typing import Any
 
 from asphalt.core import Context
 from raygun4py.raygunprovider import RaygunSender
@@ -27,5 +29,5 @@ class RaygunExceptionReporter(ExceptionReporter):
         self.client = RaygunSender(api_key, config)
 
     def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                         extra: Dict[str, Any]) -> None:
+                         extra: dict[str, Any]) -> None:
         self.client.send_exception(exception, **extra)

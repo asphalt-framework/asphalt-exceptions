@@ -3,7 +3,7 @@ import logging
 import pytest
 from asphalt.core import Context
 
-from asphalt.exceptions import report_exception, ExtrasProvider
+from asphalt.exceptions import ExtrasProvider, report_exception
 from asphalt.exceptions.api import ExceptionReporter
 
 
@@ -14,6 +14,8 @@ from asphalt.exceptions.api import ExceptionReporter
 @pytest.mark.parametrize('faulty_reporter', [False, True], ids=['goodreporter', 'badreporter'])
 @pytest.mark.asyncio
 async def test_report_exception(logger, faulty_extras_provider, faulty_reporter, caplog):
+    reported_exception = reported_message = None
+
     class DummyReporter(ExceptionReporter):
         def report_exception(self, ctx: Context, exception: BaseException, message: str,
                              extra) -> None:
@@ -35,7 +37,6 @@ async def test_report_exception(logger, faulty_extras_provider, faulty_reporter,
         def get_extras(self, ctx: Context, reporter: ExceptionReporter):
             return None
 
-    reported_exception = reported_message = None
     async with Context() as ctx:
         ctx.add_resource(DummyReporter(), types=[ExceptionReporter])
         ctx.add_resource(DummyProvider(), 'dummy', types=[ExtrasProvider])
@@ -52,7 +53,7 @@ async def test_report_exception(logger, faulty_extras_provider, faulty_reporter,
                     if record.name == 'asphalt.exceptions']
         assert messages[-1].startswith(
             'error calling exception reporter '
-            '(test_report_exception.test_report_exception.<locals>.DummyReporter)')
+            '(tests.test_report_exception.test_report_exception.<locals>.DummyReporter)')
 
 
 def test_no_exception():

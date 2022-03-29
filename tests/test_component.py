@@ -1,12 +1,11 @@
-import logging
-
 import gc
+import logging
 from asyncio import sleep
 from collections import OrderedDict
 
 import pytest
-
 from asphalt.core.context import Context
+
 from asphalt.exceptions.api import ExceptionReporter
 from asphalt.exceptions.component import ExceptionReporterComponent
 
@@ -44,9 +43,9 @@ async def test_start(caplog, install_default_handler):
         assert len(messages) == 2
 
     assert messages[0] == ('Configured exception reporter (dummy1; '
-                           'class=test_component.test_start.<locals>.DummyReporter)')
+                           'class=tests.test_component.test_start.<locals>.DummyReporter)')
     assert messages[1] == ('Configured exception reporter (dummy2; '
-                           'class=test_component.test_start.<locals>.DummyReporter2)')
+                           'class=tests.test_component.test_start.<locals>.DummyReporter2)')
 
 
 @pytest.mark.asyncio
@@ -56,6 +55,8 @@ async def test_default_exception_handler(event_loop):
     exception handler.
 
     """
+    reported_exception = reported_message = None
+
     async def fail_task():
         return 1 / 0
 
@@ -66,7 +67,6 @@ async def test_default_exception_handler(event_loop):
             reported_exception = exception
             reported_message = message
 
-    reported_exception = reported_message = None
     async with Context() as ctx:
         component = ExceptionReporterComponent(backend=DummyExceptionReporter)
         await component.start(ctx)

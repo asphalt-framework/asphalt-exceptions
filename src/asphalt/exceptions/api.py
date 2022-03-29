@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
-from typing import Dict, Any, Optional
+from typing import Any
 
 from asphalt.core import Context
 
@@ -14,7 +16,7 @@ class ExceptionReporter(metaclass=ABCMeta):
 
     @abstractmethod
     def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                         extra: Dict[str, Any]) -> None:
+                         extra: dict[str, Any]) -> None:
         """
         Report the given exception to an external service.
 
@@ -41,7 +43,7 @@ class ExtrasProvider(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_extras(self, ctx: Context, reporter: ExceptionReporter) -> Optional[Dict[str, Any]]:
+    def get_extras(self, ctx: Context, reporter: ExceptionReporter) -> dict[str, Any] | None:
         """
         Return context specific extras for the given exception reporter backend.
 

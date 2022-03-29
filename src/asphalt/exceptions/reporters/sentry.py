@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from asphalt.core import Context
 from raven import Client
@@ -41,6 +43,6 @@ class SentryExceptionReporter(ExceptionReporter):
         self.client = Client(**client_args)
 
     def report_exception(self, ctx: Context, exception: BaseException, message: str,
-                         extra: Dict[str, Any]) -> None:
+                         extra: dict[str, Any]) -> None:
         exc_info = type(exception), exception, exception.__traceback__
         self.client.captureException(exc_info, message=message, **extra)
