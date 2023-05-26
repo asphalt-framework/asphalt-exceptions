@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, get_running_loop
 from functools import partial
 from typing import Any, AsyncIterator
 
@@ -13,7 +13,6 @@ from asphalt.core import (
     merge_config,
     qualified_name,
 )
-from typeguard import check_argument_types
 
 from asphalt.exceptions import report_exception
 from asphalt.exceptions.api import ExceptionReporter
@@ -66,7 +65,6 @@ class ExceptionReporterComponent(Component):
         install_default_handler: bool = True,
         **default_args,
     ) -> None:
-        check_argument_types()
         self.install_default_handler = install_default_handler
         if not reporters:
             reporters = {"default": default_args}
@@ -91,10 +89,10 @@ class ExceptionReporterComponent(Component):
 
         if self.install_default_handler:
             handler = partial(default_exception_handler, ctx=ctx)
-            ctx.loop.set_exception_handler(handler)
+            get_running_loop().set_exception_handler(handler)
             logger.info("Installed default event loop exception handler")
 
             yield
 
-            ctx.loop.set_exception_handler(None)
+            get_running_loop().set_exception_handler(None)
             logger.info("Uninstalled default event loop exception handler")

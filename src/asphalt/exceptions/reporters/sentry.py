@@ -6,7 +6,6 @@ from typing import Any, Sequence
 import sentry_sdk
 from asphalt.core import Context, resolve_reference
 from sentry_sdk.integrations import Integration
-from typeguard import check_argument_types
 
 from asphalt.exceptions.api import ExceptionReporter
 
@@ -43,7 +42,6 @@ class SentryExceptionReporter(ExceptionReporter):
     def __init__(
         self, integrations: Sequence[Integration | dict[str, Any]] = (), **options
     ) -> None:
-        check_argument_types()
         options.setdefault("environment", "development" if __debug__ else "production")
 
         integrations_: list[Integration] = []

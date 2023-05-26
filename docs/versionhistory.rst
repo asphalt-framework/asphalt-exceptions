@@ -3,6 +3,10 @@ Version history
 
 This library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.
 
+**UNRELEASED**
+
+- Removed explicit run-time argument type checks and the ``typeguard`` dependency
+
 **2.0.0** (2022-03-29)
 
 - **BACKWARDS INCOMPATIBLE** Switched Sentry reporter to use sentry-sdk instead of raven
