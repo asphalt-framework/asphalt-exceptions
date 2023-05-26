@@ -17,7 +17,7 @@ module_logger = logging.getLogger(__name__)
 def report_exception(
     ctx: Context,
     message: str,
-    exception: BaseException = None,
+    exception: BaseException | None = None,
     *,
     logger: logging.Logger | str | bool = True,
 ) -> None:

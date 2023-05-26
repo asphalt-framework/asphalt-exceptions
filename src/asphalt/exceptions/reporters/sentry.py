@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Sequence, Union
+from typing import Any, Sequence
 
 import sentry_sdk
 from asphalt.core import Context, resolve_reference
@@ -41,7 +41,7 @@ class SentryExceptionReporter(ExceptionReporter):
     """
 
     def __init__(
-        self, integrations: Sequence[Union[Integration, Dict[str, Any]]] = (), **options
+        self, integrations: Sequence[Integration | dict[str, Any]] = (), **options
     ) -> None:
         check_argument_types()
         options.setdefault("environment", "development" if __debug__ else "production")

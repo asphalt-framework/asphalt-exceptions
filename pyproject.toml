@@ -60,13 +60,18 @@ raygun = "asphalt.exceptions.reporters.raygun:RaygunExceptionReporter"
 version_scheme = "post-release"
 local_scheme = "dirty-tag"
 
-[tool.isort]
-src_paths = ["src"]
-skip_gitignore = true
-profile = "black"
+[tool.ruff]
+line-length = 99
+select = [
+    "E", "F", "W",  # default flake-8
+    "I",            # isort
+    "PGH",          # pygrep-hooks
+    "UP",           # pyupgrade
+]
+target-version = "py37"
 
-[tool.flake8]
-max-line-length = 99
+[tool.ruff.isort]
+known-first-party = ["asphalt.exceptions"]
 
 [tool.pytest.ini_options]
 addopts = "-rsx --tb=short"

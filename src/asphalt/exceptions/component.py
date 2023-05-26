@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from asyncio import AbstractEventLoop
 from functools import partial
-from typing import Any, AsyncIterator, Dict, Optional
+from typing import Any, AsyncIterator
 
 from asphalt.core import (
     Component,
@@ -62,7 +62,7 @@ class ExceptionReporterComponent(Component):
 
     def __init__(
         self,
-        reporters: Dict[str, Optional[Dict[str, Any]]] = None,
+        reporters: dict[str, dict[str, Any] | None] | None = None,
         install_default_handler: bool = True,
         **default_args,
     ) -> None:
