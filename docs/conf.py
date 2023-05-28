@@ -8,7 +8,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
-    "sphinxcontrib.asyncio",
 ]
 
 templates_path = ["_templates"]
@@ -22,7 +21,7 @@ v = parse(version(project))
 version = v.base_version
 release = v.public
 
-language = None
+language = "en"
 
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
