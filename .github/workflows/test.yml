@@ -23,9 +23,11 @@ jobs:
         cache: pip
         cache-dependency-path: pyproject.toml
     - name: Install dependencies
-      run: pip install -e .[test,sentry,raygun] coveralls
+      run: pip install -e .[test] coveralls
     - name: Test with pytest
-      run: coverage run -m pytest
+      run: |
+        coverage run -m pytest
+        coverage xml
     - name: Upload Coverage
       uses: coverallsapp/github-action@v2
       with:
