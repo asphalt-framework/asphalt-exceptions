@@ -2,7 +2,7 @@ name: test suite
 
 on:
   push:
-    branches: [master]
+    branches: [master, fix-coverage]
   pull_request:
 
 jobs:
@@ -25,7 +25,9 @@ jobs:
     - name: Install dependencies
       run: pip install -e .[test,sentry,raygun] coveralls
     - name: Test with pytest
-      run: coverage run -m pytest
+      run: |
+        coverage run -m pytest
+        coverage xml
     - name: Upload Coverage
       uses: coverallsapp/github-action@v2
       with:
