@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from asphalt.core import Context
+from pytest_mock import MockerFixture
 from sentry_sdk import Transport
 from sentry_sdk.integrations import Integration
 
@@ -16,6 +17,14 @@ class DummyIntegration(Integration):
     @staticmethod
     def setup_once():
         pass
+
+
+def before_send(event, hint):
+    pass
+
+
+def before_breadcrumb(breadcrumb, hint):
+    pass
 
 
 @pytest.mark.asyncio
@@ -42,4 +51,17 @@ def test_integrations():
     ]
     SentryExceptionReporter(
         dsn="http://username:password@127.0.0.1/000000", integrations=integrations
+    )
+
+
+def test_hook_lookup(mocker: MockerFixture):
+    init_func = mocker.patch("sentry_sdk.init")
+    SentryExceptionReporter(
+        before_send=f"{__name__}:before_send", before_breadcrumb=f"{__name__}:before_breadcrumb"
+    )
+    init_func.assert_called_once_with(
+        integrations=[],
+        before_send=before_send,
+        before_breadcrumb=before_breadcrumb,
+        environment="development",
     )

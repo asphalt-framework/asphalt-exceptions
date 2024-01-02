@@ -3,6 +3,10 @@ Version history
 
 This library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.
 
+**UNRELEASED**
+
+- Added support for looking up hook callables for the Sentry reporter
+
 **2.1.0** (2023-06-10)
 
 - Removed explicit run-time argument type checks and the ``typeguard`` dependency

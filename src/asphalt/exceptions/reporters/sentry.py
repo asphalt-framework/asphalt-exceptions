@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+import sys
+from collections.abc import Callable
 from typing import Any, Sequence
 
 import sentry_sdk
@@ -9,7 +11,19 @@ from sentry_sdk.integrations import Integration
 
 from asphalt.exceptions.api import ExceptionReporter
 
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
+
 logger = logging.getLogger(__name__)
+
+Event: TypeAlias = "dict[str, Any]"
+Hint: TypeAlias = "dict[str, Any]"
+Breadcrumb: TypeAlias = "dict[str, Any]"
+BreadcrumbHint: TypeAlias = "dict[str, Any]"
+EventProcessor: TypeAlias = "Callable[[Event, Hint], Event | None]"
+BreadcrumbProcessor: TypeAlias = "Callable[[Breadcrumb, BreadcrumbHint], Breadcrumb | None]"
 
 
 class SentryExceptionReporter(ExceptionReporter):
@@ -31,7 +45,11 @@ class SentryExceptionReporter(ExceptionReporter):
     should be a mapping of keyword arguments to their values.
 
     The extras passed to this backend are passed to :func:`sentry_sdk.capture_exception` as keyword
-    arguments.
+    arguments. Two such options have been special cased and can be looked up as a
+    ``module:varname`` reference:
+
+    - ``before_send``
+    - ``before_breadcrumb``
 
     For more information, see the `Sentry SDK documentation`_.
 
@@ -40,8 +58,22 @@ class SentryExceptionReporter(ExceptionReporter):
     """
 
     def __init__(
-        self, integrations: Sequence[Integration | dict[str, Any]] = (), **options
+        self,
+        integrations: Sequence[Integration | dict[str, Any]] = (),
+        before_send: EventProcessor | str | None = None,
+        before_breadcrumb: BreadcrumbProcessor | str | None = None,
+        **options,
     ) -> None:
+        if isinstance(before_send, str):
+            _before_send: EventProcessor | None = resolve_reference(before_send)
+        else:
+            _before_send = before_send
+
+        if isinstance(before_breadcrumb, str):
+            _before_breadcrumb: BreadcrumbProcessor | None = resolve_reference(before_breadcrumb)
+        else:
+            _before_breadcrumb = before_breadcrumb
+
         options.setdefault("environment", "development" if __debug__ else "production")
 
         integrations_: list[Integration] = []
@@ -54,7 +86,12 @@ class SentryExceptionReporter(ExceptionReporter):
 
             integrations_.append(integration)
 
-        sentry_sdk.init(integrations=integrations_, **options)
+        sentry_sdk.init(
+            integrations=integrations_,
+            before_send=_before_send,
+            before_breadcrumb=_before_breadcrumb,
+            **options,
+        )
 
     def report_exception(
         self,
