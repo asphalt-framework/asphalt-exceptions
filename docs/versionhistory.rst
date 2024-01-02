@@ -3,7 +3,7 @@ Version history
 
 This library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.
 
-**UNRELEASED**
+**2.2.0** (2024-01-02)
 
 - Added support for looking up hook callables for the Sentry reporter
 
