@@ -48,9 +48,7 @@ class ExtrasProvider(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_extras(
-        self, ctx: Context, reporter: ExceptionReporter
-    ) -> dict[str, Any] | None:
+    def get_extras(self, ctx: Context, reporter: ExceptionReporter) -> dict[str, Any] | None:
         """
         Return context specific extras for the given exception reporter backend.
 

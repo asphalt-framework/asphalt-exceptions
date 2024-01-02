@@ -12,16 +12,10 @@ from asphalt.exceptions.api import ExceptionReporter
     [True, False, "asphalt.exceptions", logging.getLogger("asphalt.exceptions")],
     ids=["autologger", "nologger", "strlogger", "loggerinstance"],
 )
-@pytest.mark.parametrize(
-    "faulty_extras_provider", [False, True], ids=["goodextras", "badextras"]
-)
-@pytest.mark.parametrize(
-    "faulty_reporter", [False, True], ids=["goodreporter", "badreporter"]
-)
+@pytest.mark.parametrize("faulty_extras_provider", [False, True], ids=["goodextras", "badextras"])
+@pytest.mark.parametrize("faulty_reporter", [False, True], ids=["goodreporter", "badreporter"])
 @pytest.mark.asyncio
-async def test_report_exception(
-    logger, faulty_extras_provider, faulty_reporter, caplog
-):
+async def test_report_exception(logger, faulty_extras_provider, faulty_reporter, caplog):
     reported_exception = reported_message = None
 
     class DummyReporter(ExceptionReporter):
@@ -59,9 +53,7 @@ async def test_report_exception(
 
     if faulty_reporter and logger:
         messages = [
-            record.message
-            for record in caplog.records
-            if record.name == "asphalt.exceptions"
+            record.message for record in caplog.records if record.name == "asphalt.exceptions"
         ]
         assert messages[-1].startswith(
             "error calling exception reporter "
@@ -71,6 +63,4 @@ async def test_report_exception(
 
 def test_no_exception():
     exc = pytest.raises(Exception, report_exception, Context(), "test")
-    exc.match(
-        'missing "exception" parameter and no current exception present in sys.exc_info()'
-    )
+    exc.match('missing "exception" parameter and no current exception present in sys.exc_info()')

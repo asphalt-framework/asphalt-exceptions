@@ -17,9 +17,7 @@ class DummyExceptionReporter(ExceptionReporter):
         self.reported_exception = exception
 
 
-@pytest.mark.parametrize(
-    "install_default_handler", [True, False], ids=["default", "nodefault"]
-)
+@pytest.mark.parametrize("install_default_handler", [True, False], ids=["default", "nodefault"])
 @pytest.mark.asyncio
 async def test_start(caplog, install_default_handler):
     class DummyReporter(ExceptionReporter):

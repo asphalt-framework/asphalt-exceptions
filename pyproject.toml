@@ -29,6 +29,7 @@ classifiers = [
 requires-python = ">=3.7"
 dependencies = [
     "asphalt ~= 4.6",
+    "typing_extensions >= 4.6.0; python_version < '3.10'"
 ]
 dynamic = ["version"]
 
@@ -65,13 +66,19 @@ local_scheme = "dirty-tag"
 
 [tool.ruff]
 line-length = 99
+target-version = "py37"
+
+[tool.ruff.lint]
 select = [
-    "E", "F", "W",  # default flake-8
+    "ASYNC",        # flake8-async
+    "E", "F", "W",  # default Flake8
+    "G",            # flake8-logging-format
     "I",            # isort
+    "ISC",          # flake8-implicit-str-concat
     "PGH",          # pygrep-hooks
+    "RUF100",       # unused noqa (yesqa)
     "UP",           # pyupgrade
 ]
-target-version = "py37"
 
 [tool.ruff.isort]
 known-first-party = ["asphalt.exceptions"]
