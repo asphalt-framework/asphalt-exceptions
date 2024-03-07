@@ -6,10 +6,10 @@ from collections.abc import Callable
 from typing import Any, Sequence
 
 import sentry_sdk
-from asphalt.core import Context, resolve_reference
+from asphalt.core import resolve_reference
 from sentry_sdk.integrations import Integration
 
-from asphalt.exceptions.api import ExceptionReporter
+from asphalt.exceptions._api import ExceptionReporter
 
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
@@ -23,7 +23,9 @@ Hint: TypeAlias = "dict[str, Any]"
 Breadcrumb: TypeAlias = "dict[str, Any]"
 BreadcrumbHint: TypeAlias = "dict[str, Any]"
 EventProcessor: TypeAlias = "Callable[[Event, Hint], Event | None]"
-BreadcrumbProcessor: TypeAlias = "Callable[[Breadcrumb, BreadcrumbHint], Breadcrumb | None]"
+BreadcrumbProcessor: TypeAlias = (
+    "Callable[[Breadcrumb, BreadcrumbHint], Breadcrumb | None]"
+)
 
 
 class SentryExceptionReporter(ExceptionReporter):
@@ -37,16 +39,17 @@ class SentryExceptionReporter(ExceptionReporter):
 
     * environment: "development" or "production", depending on the ``__debug__`` flag
 
-    Integrations can be added via the ``integrations`` option which is a list where each item is
-    either an object that implements the :class:`sentry_sdk.integrations.Integration` interface,
-    or a dictionary where the ``type`` key is a module:varname reference to a class implementing
-    the aforementioned interface. The ``args`` key, when present, should be a sequence that is
-    passed to the integration as positional arguments, while the ``kwargs`` key, when present,
-    should be a mapping of keyword arguments to their values.
+    Integrations can be added via the ``integrations`` option which is a list where each
+    item is either an object that implements the
+    :class:`sentry_sdk.integrations.Integration` interface, or a dictionary where the
+    ``type`` key is a module:varname reference to a class implementing
+    the aforementioned interface. The ``args`` key, when present, should be a sequence
+    that is passed to the integration as positional arguments, while the ``kwargs`` key,
+    when present, should be a mapping of keyword arguments to their values.
 
-    The extras passed to this backend are passed to :func:`sentry_sdk.capture_exception` as keyword
-    arguments. Two such options have been special cased and can be looked up as a
-    ``module:varname`` reference:
+    The extras passed to this backend are passed to :func:`sentry_sdk.capture_exception`
+    as keyword arguments. Two such options have been special cased and can be looked up
+    as a ``module:varname`` reference:
 
     - ``before_send``
     - ``before_breadcrumb``
@@ -62,7 +65,7 @@ class SentryExceptionReporter(ExceptionReporter):
         integrations: Sequence[Integration | dict[str, Any]] = (),
         before_send: EventProcessor | str | None = None,
         before_breadcrumb: BreadcrumbProcessor | str | None = None,
-        **options,
+        **options: Any,
     ) -> None:
         if isinstance(before_send, str):
             _before_send: EventProcessor | None = resolve_reference(before_send)
@@ -70,7 +73,9 @@ class SentryExceptionReporter(ExceptionReporter):
             _before_send = before_send
 
         if isinstance(before_breadcrumb, str):
-            _before_breadcrumb: BreadcrumbProcessor | None = resolve_reference(before_breadcrumb)
+            _before_breadcrumb: BreadcrumbProcessor | None = resolve_reference(
+                before_breadcrumb
+            )
         else:
             _before_breadcrumb = before_breadcrumb
 
@@ -80,11 +85,13 @@ class SentryExceptionReporter(ExceptionReporter):
         for integration in integrations:
             if isinstance(integration, dict):
                 integration_class = resolve_reference(integration["type"])
-                integration = integration_class(
-                    *integration.get("args", ()), **integration.get("kwargs", {})
+                integrations_.append(
+                    integration_class(
+                        *integration.get("args", ()), **integration.get("kwargs", {})
+                    )
                 )
-
-            integrations_.append(integration)
+            else:
+                integrations_.append(integration)
 
         sentry_sdk.init(
             integrations=integrations_,
@@ -95,7 +102,6 @@ class SentryExceptionReporter(ExceptionReporter):
 
     def report_exception(
         self,
-        ctx: Context,
         exception: BaseException,
         message: str,
         extra: dict[str, Any],
