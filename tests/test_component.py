@@ -6,7 +6,7 @@ from asyncio import get_running_loop, sleep
 from typing import Any
 
 import pytest
-from asphalt.core import Context, require_resource
+from asphalt.core import Context, get_resource_nowait
 from pytest import LogCaptureFixture
 
 from asphalt.exceptions import ExceptionReporter, ExceptionReporterComponent
@@ -89,7 +89,7 @@ async def test_default_exception_handler() -> None:
     async with Context():
         component = ExceptionReporterComponent(backend=DummyExceptionReporter)
         await component.start()
-        reporter = require_resource(ExceptionReporter)  # type: ignore[type-abstract]
+        reporter = get_resource_nowait(ExceptionReporter)  # type: ignore[type-abstract]
         task = get_running_loop().create_task(fail_task())
         await sleep(0.1)
         del task

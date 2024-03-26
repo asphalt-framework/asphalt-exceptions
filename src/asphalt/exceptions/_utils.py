@@ -59,8 +59,8 @@ def report_exception(
     if actual_logger:
         actual_logger.error(message, exc_info=exception)
 
-    extras_providers = get_resources(ExtrasProvider)  # type: ignore[type-abstract]
-    for reporter in get_resources(ExceptionReporter):  # type: ignore[type-abstract]
+    extras_providers = get_resources(ExtrasProvider).values()  # type: ignore[type-abstract]
+    for reporter in get_resources(ExceptionReporter).values():  # type: ignore[type-abstract]
         extra: dict[str, Any] = {}
         for provider in extras_providers:
             try:

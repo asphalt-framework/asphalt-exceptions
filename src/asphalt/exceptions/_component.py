@@ -76,7 +76,7 @@ class ExceptionReporterComponent(Component):
             self.reporters.append((resource_name, reporter))
 
     @context_teardown
-    async def start(self) -> AsyncGenerator[None, Exception | None]:
+    async def start(self) -> AsyncGenerator[None, BaseException | None]:
         for resource_name, reporter in self.reporters:
             types: list[type] = [ExceptionReporter, type(reporter)]
             add_resource(reporter, resource_name, types=types)
