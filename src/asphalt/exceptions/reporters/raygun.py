@@ -4,7 +4,7 @@ from typing import Any
 
 from raygun4py.raygunprovider import RaygunSender
 
-from asphalt.exceptions._api import ExceptionReporter
+from .._api import ExceptionReporter
 
 
 class RaygunExceptionReporter(ExceptionReporter):

@@ -6,6 +6,7 @@ from asyncio import get_running_loop, sleep
 from typing import Any
 
 import pytest
+import sniffio
 from asphalt.core import Context, get_resource_nowait
 from pytest import LogCaptureFixture
 
@@ -26,11 +27,7 @@ class DummyExceptionReporter(ExceptionReporter):
         self.reported_exception = exception
 
 
-@pytest.mark.parametrize(
-    "install_default_handler",
-    [pytest.param(True, id="default"), pytest.param(False, id="nodefault")],
-)
-async def test_start(caplog: LogCaptureFixture, install_default_handler: bool) -> None:
+async def test_start(caplog: LogCaptureFixture) -> None:
     class DummyReporter(ExceptionReporter):
         def report_exception(
             self,
@@ -54,6 +51,7 @@ async def test_start(caplog: LogCaptureFixture, install_default_handler: bool) -
         "dummy1": {"backend": DummyReporter},
         "dummy2": {"backend": DummyReporter2},
     }
+    install_default_handler = sniffio.current_async_library() == "asyncio"
     cmp = ExceptionReporterComponent(
         reporters=reporters, install_default_handler=install_default_handler
     )
@@ -77,6 +75,7 @@ async def test_start(caplog: LogCaptureFixture, install_default_handler: bool) -
     )
 
 
+@pytest.mark.parametrize("anyio_backend", ["asyncio"], indirect=True)
 async def test_default_exception_handler() -> None:
     """
     Test that an unawaited Task being garbage collected ends up being processed by the
@@ -99,6 +98,7 @@ async def test_default_exception_handler() -> None:
     assert isinstance(reporter.reported_exception, ZeroDivisionError)
 
 
+@pytest.mark.parametrize("anyio_backend", ["asyncio"], indirect=True)
 async def test_default_exception_handler_no_exception() -> None:
     async with Context():
         component = ExceptionReporterComponent(backend=DummyExceptionReporter)

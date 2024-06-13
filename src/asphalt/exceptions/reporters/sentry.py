@@ -9,7 +9,7 @@ import sentry_sdk
 from asphalt.core import resolve_reference
 from sentry_sdk.integrations import Integration
 
-from asphalt.exceptions._api import ExceptionReporter
+from .._api import ExceptionReporter
 
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
@@ -95,7 +95,7 @@ class SentryExceptionReporter(ExceptionReporter):
 
         sentry_sdk.init(
             integrations=integrations_,
-            before_send=_before_send,
+            before_send=_before_send,  # type: ignore[arg-type]
             before_breadcrumb=_before_breadcrumb,
             **options,
         )

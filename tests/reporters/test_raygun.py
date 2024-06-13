@@ -1,7 +1,7 @@
-import asyncio
 from unittest.mock import patch
 
 import pytest
+from anyio import sleep
 
 from asphalt.exceptions.reporters.raygun import RaygunExceptionReporter
 
@@ -20,5 +20,5 @@ async def test_raygun() -> None:
         assert exception is not None
         reporter.report_exception(exception, "test exception", {})
 
-    await asyncio.sleep(0.1)
+    await sleep(0.1)
     assert post.call_count == 1
