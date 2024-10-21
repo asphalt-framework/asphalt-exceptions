@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
 
 import pytest
-from asphalt.core import Context
 from pytest_mock import MockerFixture
 from sentry_sdk import Transport
 from sentry_sdk.integrations import Integration
 
+from asphalt.core import Context
 from asphalt.exceptions.reporters.sentry import SentryExceptionReporter
 
 

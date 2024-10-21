@@ -6,9 +6,9 @@ from collections.abc import Callable
 from typing import Any, Sequence
 
 import sentry_sdk
-from asphalt.core import Context, resolve_reference
 from sentry_sdk.integrations import Integration
 
+from asphalt.core import Context, resolve_reference
 from asphalt.exceptions.api import ExceptionReporter
 
 if sys.version_info >= (3, 10):

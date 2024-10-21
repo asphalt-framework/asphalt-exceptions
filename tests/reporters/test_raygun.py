@@ -2,8 +2,8 @@ import asyncio
 from unittest.mock import patch
 
 import pytest
-from asphalt.core import Context
 
+from asphalt.core import Context
 from asphalt.exceptions.reporters.raygun import RaygunExceptionReporter
 
 

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from asphalt.core import Context
 from raygun4py.raygunprovider import RaygunSender
 
+from asphalt.core import Context
 from asphalt.exceptions.api import ExceptionReporter
 
 
