@@ -4,8 +4,8 @@ from asyncio import sleep
 from collections import OrderedDict
 
 import pytest
-from asphalt.core.context import Context
 
+from asphalt.core.context import Context
 from asphalt.exceptions.api import ExceptionReporter
 from asphalt.exceptions.component import ExceptionReporterComponent
 

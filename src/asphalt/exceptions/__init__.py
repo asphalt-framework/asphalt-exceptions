@@ -6,7 +6,6 @@ import sys
 from typing import Any
 
 from asphalt.core import Context, merge_config, qualified_name
-
 from asphalt.exceptions.api import ExceptionReporter, ExtrasProvider
 
 __all__ = ("report_exception",)

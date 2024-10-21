@@ -1,8 +1,8 @@
 import logging
 
 import pytest
-from asphalt.core import Context
 
+from asphalt.core import Context
 from asphalt.exceptions import ExtrasProvider, report_exception
 from asphalt.exceptions.api import ExceptionReporter
 

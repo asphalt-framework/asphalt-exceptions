@@ -13,7 +13,6 @@ from asphalt.core import (
     merge_config,
     qualified_name,
 )
-
 from asphalt.exceptions import report_exception
 from asphalt.exceptions.api import ExceptionReporter
 
