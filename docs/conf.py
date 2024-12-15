@@ -8,6 +8,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
+    "sphinx_rtd_theme",
 ]
 
 templates_path = ["_templates"]
