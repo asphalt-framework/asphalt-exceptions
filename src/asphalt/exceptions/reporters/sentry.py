@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 import sys
-from collections.abc import Callable
-from typing import Any, Sequence
+from collections.abc import Callable, Sequence
+from typing import Any
 
 import sentry_sdk
 from asphalt.core import resolve_reference
