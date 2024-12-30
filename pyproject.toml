@@ -37,6 +37,7 @@ Homepage = "https://github.com/asphalt-framework/asphalt-exceptions"
 
 [project.optional-dependencies]
 test = [
+    "anyio[trio] ~= 4.1",
     "asphalt-exceptions[sentry,raygun]",
     "coverage >= 7",
     "pytest",

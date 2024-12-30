@@ -45,7 +45,7 @@ async def test_sentry() -> None:
     assert exception is not None
     reporter.report_exception(exception, "test exception", {})
 
-    transport.capture_event.assert_called_once()
+    transport.capture_envelope.assert_called_once()
 
 
 def test_integrations() -> None:
