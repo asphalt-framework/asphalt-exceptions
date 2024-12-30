@@ -38,6 +38,7 @@ Homepage = "https://github.com/asphalt-framework/asphalt-exceptions"
 [project.optional-dependencies]
 test = [
     "asphalt-exceptions[sentry,raygun]",
+    "coverage >= 7",
     "pytest",
     "pytest-mock",
 ]
