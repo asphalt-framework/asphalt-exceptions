@@ -78,7 +78,7 @@ known-first-party = ["asphalt.exceptions"]
 known-third-party = ["asphalt.core"]
 
 [tool.pytest.ini_options]
-addopts = "-rsx --tb=short"
+addopts = ["-rsfE", "--tb=short"]
 testpaths = ["tests"]
 
 [tool.mypy]
