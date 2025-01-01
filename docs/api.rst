@@ -1,28 +1,26 @@
 API reference
 =============
 
+.. py:currentmodule:: asphalt.exceptions
+
 Component
 ---------
 
-.. autoclass:: asphalt.exceptions.component.ExceptionReporterComponent
-    :members:
+.. autoclass:: ExceptionReporterComponent
 
 Functions
 ---------
 
-.. autofunction:: asphalt.exceptions.report_exception
+.. autofunction:: report_exception
 
-Abstract classes
-----------------
+Interfaces
+----------
 
-.. automodule:: asphalt.exceptions.api
-    :members:
+.. autoclass:: ExceptionReporter
+.. autoclass:: ExtrasProvider
 
 Exception reporters
 -------------------
 
 .. autoclass:: asphalt.exceptions.reporters.sentry.SentryExceptionReporter
-    :members:
-
 .. autoclass:: asphalt.exceptions.reporters.raygun.RaygunExceptionReporter
-    :members:

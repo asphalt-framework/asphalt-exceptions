@@ -5,8 +5,8 @@ Writing new reporter backends
 -----------------------------
 
 To support new exception reporting services, you can subclass the
-:class:`~asphalt.exceptions.api.ExceptionReporter` class. You just need to implement the
-:meth:`~asphalt.exceptions.api.ExceptionReporter.report_exception` method.
+:class:`~asphalt.exceptions.ExceptionReporter` class. You just need to implement the
+:meth:`~asphalt.exceptions.ExceptionReporter.report_exception` method.
 
 If you want your exception reporter to be available as a backend for
 :class:`~asphalt.exceptions.component.ExceptionReporterComponent`, you need to add the
@@ -39,7 +39,7 @@ Writing extras providers
 ------------------------
 
 If you want to provide backend specific extra data for exception reporting, you can do so by
-subclassing :class:`~asphalt.exceptions.api.ExtrasProvider` and adding one or more instances of it
+subclassing :class:`~asphalt.exceptions.ExtrasProvider` and adding one or more instances of it
 as resources to the context.
 
 For example, if you wanted to provide extra data for Sentry about your custom context
