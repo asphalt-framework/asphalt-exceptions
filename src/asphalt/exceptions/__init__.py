@@ -37,8 +37,7 @@ def report_exception(
         exception = sys.exc_info()[1]
         if not exception:
             raise ValueError(
-                'missing "exception" parameter and no current exception present in '
-                "sys.exc_info()"
+                'missing "exception" parameter and no current exception present in sys.exc_info()'
             )
 
     actual_logger: logging.Logger | None
